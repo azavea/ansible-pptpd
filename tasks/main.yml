@@ -24,3 +24,7 @@
 - name: Setup iptables NAT
   command: "iptables -t nat -A POSTROUTING -o {{ pptpd_interface }} -j MASQUERADE"
   when: not iptables_nat.stdout | search("MASQUERADE")
+
+- name: Persist iptables rules
+  command: "service iptables-persistent save"
+  when: not iptables_nat.stdout | search("MASQUERADE")
