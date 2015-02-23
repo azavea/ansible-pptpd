@@ -1,0 +1,26 @@
+---
+- name: Install pptpd
+  apt: pkg=pptpd={{ pptpd_version }} state=present
+
+- name: Configure pptpd
+  template: src="{{ item.src }}.j2"
+            dest="/etc/{{ item.dest }}"
+  with_items:
+    - { src: "pptpd.conf" , dest: "pptpd.conf" }
+    - { src: "pptpd-options", dest: "ppp/pptpd-options" }
+    - { src: "chap-secrets", dest: "ppp/chap-secrets" }
+  notify:
+    - Restart pptpd
+
+- name: Setup IP forwarding
+  sysctl: name="net.ipv4.ip_forward"
+          value="1"
+          state=present
+
+- name: Determine if iptables NAT was configured
+  command: "iptables -n -t nat -L POSTROUTING"
+  register: iptables_nat
+
+- name: Setup iptables NAT
+  command: "iptables -t nat -A POSTROUTING -o {{ pptpd_interface }} -j MASQUERADE"
+  when: not iptables_nat.stdout | search("MASQUERADE")

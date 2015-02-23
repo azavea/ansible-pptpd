@@ -1,0 +1,11 @@
+---
+pptpd_version: "1.3.4*"
+pptpd_connections: 100
+pptpd_interface: "eth0"
+pptpd_localip: "172.31.0.1"
+pptpd_remoteip: "172.31.0.234-238,172.31.0.245"
+pptpd_ms_dns:
+  - "8.8.8.8"
+  - "8.8.4.4"
+pptpd_users:
+  - { client: "username", server: "*", secret: "password", address: "*" }
